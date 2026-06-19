@@ -1,13 +1,18 @@
 import numpy as np
 from scipy.spatial import distance_matrix
 
-import cone_equation
-import data_struct
+from shellarc_railgun.data_model import data_struct
+from shellarc_railgun.computation_core.z_offset import cone_equation
 
 def relocate_points(M: np.ndarray, 
-                    total_cut_num: int
+                    total_cut_num: int,
+                    proj_length: int,
+                    today: int,
                     ) -> np.ndarray:
-    inverse_1_minus_t = 1 / (1 - cone_equation.proj_context_constant())
+    inverse_1_minus_t = 1 / (1 - cone_equation.proj_context_constant(
+        total_cut_num=total_cut_num,
+        proj_length=proj_length
+    ))
     
     cut_axis_range = np.arange(1, total_cut_num + 1)
     component_axis_range = np.arange(0, cone_equation.FITNESS + 1)
@@ -18,7 +23,12 @@ def relocate_points(M: np.ndarray,
     grid_available = np.ones(len(grid_coords), dtype=bool)
     
     total_grid_size = len(grid_coords)
-    result_array = np.zeros(total_grid_size, dtype=data_struct.point_dtype)
+    result_array = np.empty(total_grid_size, dtype=data_struct.point_dtype)
+    
+    result_array[data_struct.NpData.POS][:, 0] = grid_coords[:, 0]
+    result_array[data_struct.NpData.POS][:, 1] = grid_coords[:, 1]
+    result_array[data_struct.NpData.POS][:, 2] = np.full(total_grid_size, today)
+    result_array[data_struct.NpData.COMP] = "Nil"
     
     sorted_indices = np.argsort(M[data_struct.NpData.POS][2])
     sorted_points = M[sorted_indices]

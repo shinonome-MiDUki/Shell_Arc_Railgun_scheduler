@@ -9,9 +9,10 @@ def proj_context_constant(total_cut_num: int,
 def compute_z_offset(cut: np.ndarray,
                      component: np.ndarray,
                      day: np.ndarray,
-                     proj_ctx_constant: float
+                     proj_ctx_constant: float,
+                     today: int
                      ) -> np.ndarray:
     t = proj_ctx_constant
     ideal_day = (1 - t) * ((cut ** 2) + (component ** 2)) ** 0.5
-    offset_array = ideal_day - day
+    offset_array = ideal_day - day if ideal_day <= today else 0
     return offset_array
