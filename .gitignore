@@ -1,0 +1,9 @@
+**/memo.txt
+vcpkg_installed/**
+**/*.dylib
+**/*.so
+**/*.dll
+**/*.a
+**/*.o
+**/.DS_Store
+**/__pycache__/**
