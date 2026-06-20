@@ -4,7 +4,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 
-\title{ShellArc Railgun Technical Memo}
+\title{ShellArc Railgun Architecture - Technical Note}
 \author{MiDUki}
 \date{June 2026}
 
@@ -24,11 +24,8 @@ in a 2D animation production pipeline.
 
 Define a discrete three-dimensional lattice space $\Gamma$, in which each
 discrete point is defined as $(x,\, y,\, z)$, where
-%
-% [FIX] cases must live inside an equation environment.
-% [FIX] Typo "dimentional" → "dimensional"
-%
-\begin{equation}
+
+\begin{equation*}
 \begin{cases}
     x \in [1,\, c_1] \cap \mathbb{Z}_{+}
         & (c_1 \in (1, \infty) \cap \mathbb{Z}_{+}) \\[4pt]
@@ -37,63 +34,50 @@ discrete point is defined as $(x,\, y,\, z)$, where
     z \in [0,\, c_2] \cap \mathbb{Z}_{+}
         & (c_2 \in (1, \infty) \cap \mathbb{Z}_{+})
 \end{cases}
-\end{equation}
+\end{equation*}
 %
 Here $c_1$, $F$, and $c_2$ denote the total cut count, the component-division
 fineness, and the project total length (day count), respectively.
 
 Submissions are represented by a group of points defined as
-%
-% [FIX] Bare braces { } → \{ \}  (set notation)
-% [FIX] \cap used in place of \in  →  corrected throughout
-% [FIX] \land \mathbb{Z}  →  \in \mathbb{Z}
-%
-\begin{equation}
+
+\begin{equation*}
 \begin{cases}
     M = \bigl\{\, p_k = (x_k,\, y_k,\, z_k) \mid k = 1, 2, \ldots, |M| \,\bigr\} \cap \Gamma \\[6pt]
     \forall\, (x, y) \in \mathbb{Z}^{2},\;
     \exists!\, z \in \mathbb{Z} \quad \text{s.t.} \quad (x, y, z) \in M
 \end{cases}
-\end{equation}
+\end{equation*}
 
 % ─────────────────────────────────────────
 \section{Evaluating Overall Progress and Status}
 % ─────────────────────────────────────────
 
 In $\Gamma$, define face $I$, which represents an ideal project progress, as
-%
-% [FIX] \cap \mathbb{R}  →  \in \mathbb{R}
-%
-\begin{equation}
+
+\begin{equation*}
 I :\;
 \begin{cases}
     z = (1 - t)\,\sqrt{x^{2} + y^{2}} \\[4pt]
     t = \dfrac{c_2^{2}}{\sqrt{c_1^{2} + 100}} \in \mathbb{R}
         \qquad (t = \text{const.})
 \end{cases}
-\end{equation}
+\end{equation*}
 
 Relocate the points in $M$ and define the resulting group as $G$, illustrated
 by the map $f : M \to G$.
-%
-% [FIX] Typo "illustarated" → "illustrated"
-%
+
 Define $f(p_k) = g_k = (x_k',\, y_k',\, z_k')$, where
-%
-% [FIX] Bare braces { } → \{ \}
-% [FIX] i \neq j, \implies  →  i \neq j \implies  (spurious comma removed)
-%
-\begin{equation}
+
 \begin{cases}
     z_k' = z_k \\[6pt]
     \forall\, i, j \in \{1, 2, \ldots, |M|\},\quad
         i \neq j \implies f(p_i) \neq f(p_j) \\[6pt]
     \forall\, (x, y, z) \in G,\quad
-        \mathcal{N}(x, y, z) \cap \bigl(G \setminus \{(x,y,z)\}\bigr) \neq \emptyset
+        \mathcal{N}(x, y, z) \cap \bigl(G \setminus \{(x,y,z)\}\bigr) \neq \emptyset \quad \text{...(*)}
 \end{cases}
-\tag{$*$}
-\end{equation}
-%
+
+
 where the neighbourhood is defined as
 \[
     \mathcal{N}(x, y, z) = \{(x \pm 1,\, y,\, z),\; (x,\, y \pm 1,\, z)\}.
@@ -107,21 +91,16 @@ Define
 \]
 
 $M$ is relocated to form $G$ such that, for $k \in \{1, 2, \ldots, |M|\}$,
-%
-% [FIX] arg min → \arg\min
-%
+
 \[
     g_k = \arg\min_{g \in \mathcal{A}_k} \bigl|E(x, y, z_k)\bigr|,
 \]
-%
+
 where $\mathcal{A}_k$ is the set of dynamically determined available positions
 for the $k$-th point, subject to constraint~$(*)$.
 
 Since $G \subseteq \Gamma$, let $T$ denote today's date, and define
-%
-% [FIX] G \cup{...}  →  G \cup \{...\}
-% [FIX] "B'" (undefined) → "G'" (consistent with the definition above)
-%
+
 \[
     G' = G \cup \{(x, y, T)\}
     \quad \text{s.t.} \quad
@@ -147,5 +126,81 @@ illustrates the overall progress relative to the ideal progress, and
       \sum_{p \in G'} \Bigl(\bigl|p_z - z_I(p)\bigr| - \mu\Bigr)^{2}}
 \]
 illustrates the deviation of progress across the project.
+
+
+% ─────────────────────────────────────────
+\section{Evaluating Momentum of Each Part of the Project}
+% ─────────────────────────────────────────
+ 
+For cut number $x_k \in [1, C_1]$, the group of points
+$\{(x, y, z) \in M \mid x = x_k\}$
+is interpolated by a cubic interpolation function $S_c$ such that $y \approx S_c(z)$.
+ 
+Define the partial derivative of $y$ with respect to $z$ at $x = x_k$ as
+\[
+    \biggl(\frac{\partial y}{\partial z}\biggr)_{\!x}\Bigg|_{x = x_k}
+    = \frac{d}{dz}\,S_c(z).
+\]
+The partial derivative of $y$ with respect to $z$ at $x = x_k$ and component
+$y = y_k$ represents the momentum of the project at component $y_k$ of cut $x_k$.
+ 
+To capture the current momentum of a cut, the momentum between the day of the
+latest submitted component and today (day $T$) must be calculated and included
+in the analysis.
+
+The extended point collection $M'$ is defined as
+\begin{equation*}
+    M' = M \cup \bigl\{\,(x_k,\; y_{\text{next}},\; T)
+        \;\big|\;
+        x_k \in [1, C_1],\quad
+        y_{\text{next}} = \bigl(\arg\max_{\substack{(x,y,z)\,\in\, M \\ x\,=\,x_k}} y\bigr) + 1
+    \,\bigr\}.
+\end{equation*}
+ 
+The momenta of component $y_k$ of each cut $x_k$, given by
+$\displaystyle\biggl(\frac{\partial y}{\partial z}\biggr)_{\!x}\bigg|_{x=x_k,\; y=y_k}$,
+are remapped and normalised as follows:
+
+\begin{equation*}
+    [\min(\mathcal{A}),\; \max(\mathcal{A})] \;\longrightarrow\; [0, 1],
+    \qquad
+    \text{where}\quad
+    \mathcal{A} = \biggl\{\,
+        \Bigl(\frac{\partial y}{\partial z}\Bigr)_{\!x}\bigg|_{x=x_k,\; y=y_k}
+        \;\Bigg|\;
+        (x_k, y_k, z_k) \in M'
+    \,\biggr\}.
+\end{equation*}
+The resulting float value represents the momentum of a specific component of a given cut.
+ 
+Here, define
+\[
+    M_{\text{frontier}}
+    = \bigl\{\,(x_k,\; y_k,\; T)
+        \;\big|\;
+        x_k \in [1, C_1],\quad
+        y_k = \arg\max_{\substack{(x,y,z)\,\in\, M \\ x\,=\,x_k}} y
+    \,\bigr\} \subseteq M',
+\]
+and
+\[
+    M'_{\text{frontier}}
+    = \bigl\{\,\forall\, p_i \in M_{\text{frontier}},\;
+        p_i = (x_i, y_i)
+        \;\big|\;
+        x_1 < x_2 < \cdots < x_{|M_{\text{frontier}}|}
+    \,\bigr\}.
+\]
+ 
+Define
+\[
+    \mathcal{F}
+    = \bigcup_{i=1}^{|M'_{\text{frontier}}| - 1}
+      \bigl\{\,(1 - m)\,p_i + m\,p_{i+1}
+          \;\big|\;
+          m \in [0, 1],\quad p_i,\, p_{i+1} \in M'_{\text{frontier}}
+      \,\bigr\}.
+\]
+$\mathcal{F}$ illustrates the current progress of each cut throughout the project.
 
 \end{document}
