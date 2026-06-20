@@ -21,13 +21,13 @@ def get_z_offset_array(M: np.ndarray,
         today=today
     )
     z_offset_array = np.zeros(
-        proj_length * (data_struct.FINENESS + 1),
+        total_cut_num * (data_struct.FINENESS + 1),
         dtype=data_struct.z_offset_dtype
         )
     z_offset_array[data_struct.NpData.OFFSET] = cone_equation.compute_z_offset(
-        cut=complemented_M[:, 0],
-        component=complemented_M[:, 1],
-        day=complemented_M[:, 2],
+        cut=complemented_M[data_struct.NpData.POS][:, 0],
+        component=complemented_M[data_struct.NpData.POS][:, 1],
+        day=complemented_M[data_struct.NpData.POS][:, 2],
         proj_ctx_constant=proj_ctx_constant,
         today=today
     )

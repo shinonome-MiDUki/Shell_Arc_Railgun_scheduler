@@ -16,8 +16,8 @@ point_dtype = np.dtype([
 ])
 
 diff_point_dtype = np.dtype([
-    (NpData.POS, 'i4', (2,)),
-    (NpData.DIFF, 'f4', (1)),
+    (NpData.POS, 'i4', (3,)),
+    (NpData.DIFF, 'f4', (1,)),
     (NpData.COMP, 'U10')  
 ])
 

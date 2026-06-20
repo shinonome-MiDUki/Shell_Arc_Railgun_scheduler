@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.spatial import distance_matrix
 
 from shellarc_railgun.data_model import data_struct
 from shellarc_railgun.computation_core.z_offset import cone_equation
@@ -15,7 +14,7 @@ def relocate_points(M: np.ndarray,
     ))
     
     cut_axis_range = np.arange(1, total_cut_num + 1)
-    component_axis_range = np.arange(0, cone_equation.FITNESS + 1)
+    component_axis_range = np.arange(0, data_struct.FINENESS + 1)
     xx, yy = np.meshgrid(cut_axis_range, component_axis_range)
     grid_coords = np.vstack([xx.ravel(), yy.ravel()]).T 
     grid_r = np.sqrt(grid_coords[:, 0]**2 + grid_coords[:, 1]**2)
@@ -29,8 +28,8 @@ def relocate_points(M: np.ndarray,
     result_array[data_struct.NpData.POS][:, 1] = grid_coords[:, 1]
     result_array[data_struct.NpData.POS][:, 2] = np.full(total_grid_size, today)
     result_array[data_struct.NpData.COMP] = "Nil"
-    
-    sorted_indices = np.argsort(M[data_struct.NpData.POS][2])
+
+    sorted_indices = np.argsort(M[data_struct.NpData.POS][:, 2])
     sorted_points = M[sorted_indices]
     
     allowed_indices = set()
@@ -57,7 +56,10 @@ def relocate_points(M: np.ndarray,
         chosen_x, chosen_y = grid_coords[best_candidate_idx]
         
         # 結果配列の該当グリッド位置にデータを書き込む
-        result_array[best_candidate_idx] = (chosen_x, chosen_y, z_val, comp_val)
+        result_array[data_struct.NpData.POS][best_candidate_idx, 0] = chosen_x
+        result_array[data_struct.NpData.POS][best_candidate_idx, 1] = chosen_y
+        result_array[data_struct.NpData.POS][best_candidate_idx, 2] = z_val
+        result_array[data_struct.NpData.COMP][best_candidate_idx]   = comp_val
         
         # 使用済みフラグを立て、候補から外す
         grid_available[best_candidate_idx] = False

@@ -14,5 +14,5 @@ def compute_z_offset(cut: np.ndarray,
                      ) -> np.ndarray:
     t = proj_ctx_constant
     ideal_day = (1 - t) * ((cut ** 2) + (component ** 2)) ** 0.5
-    offset_array = ideal_day - day if ideal_day <= today else 0
+    offset_array = np.where(ideal_day <= today, ideal_day - day, 0.0)
     return offset_array
