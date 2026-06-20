@@ -1,0 +1,151 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\title{ShellArc Railgun Technical Memo}
+\author{MiDUki}
+\date{June 2026}
+
+\begin{document}
+\maketitle
+
+% ─────────────────────────────────────────
+\section{Introduction}
+% ─────────────────────────────────────────
+
+This is a mathematical model designed for schedule and production management
+in a 2D animation production pipeline.
+
+% ─────────────────────────────────────────
+\section{Definition of the Three-Dimensional Domain Used to Demonstrate Progress}
+% ─────────────────────────────────────────
+
+Define a discrete three-dimensional lattice space $\Gamma$, in which each
+discrete point is defined as $(x,\, y,\, z)$, where
+%
+% [FIX] cases must live inside an equation environment.
+% [FIX] Typo "dimentional" → "dimensional"
+%
+\begin{equation}
+\begin{cases}
+    x \in [1,\, c_1] \cap \mathbb{Z}_{+}
+        & (c_1 \in (1, \infty) \cap \mathbb{Z}_{+}) \\[4pt]
+    y \in [0,\, F]  \cap \mathbb{Z}
+        & (F   \in (1, \infty) \cap \mathbb{Z}_{+}) \\[4pt]
+    z \in [0,\, c_2] \cap \mathbb{Z}_{+}
+        & (c_2 \in (1, \infty) \cap \mathbb{Z}_{+})
+\end{cases}
+\end{equation}
+%
+Here $c_1$, $F$, and $c_2$ denote the total cut count, the component-division
+fineness, and the project total length (day count), respectively.
+
+Submissions are represented by a group of points defined as
+%
+% [FIX] Bare braces { } → \{ \}  (set notation)
+% [FIX] \cap used in place of \in  →  corrected throughout
+% [FIX] \land \mathbb{Z}  →  \in \mathbb{Z}
+%
+\begin{equation}
+\begin{cases}
+    M = \bigl\{\, p_k = (x_k,\, y_k,\, z_k) \mid k = 1, 2, \ldots, |M| \,\bigr\} \cap \Gamma \\[6pt]
+    \forall\, (x, y) \in \mathbb{Z}^{2},\;
+    \exists!\, z \in \mathbb{Z} \quad \text{s.t.} \quad (x, y, z) \in M
+\end{cases}
+\end{equation}
+
+% ─────────────────────────────────────────
+\section{Evaluating Overall Progress and Status}
+% ─────────────────────────────────────────
+
+In $\Gamma$, define face $I$, which represents an ideal project progress, as
+%
+% [FIX] \cap \mathbb{R}  →  \in \mathbb{R}
+%
+\begin{equation}
+I :\;
+\begin{cases}
+    z = (1 - t)\,\sqrt{x^{2} + y^{2}} \\[4pt]
+    t = \dfrac{c_2^{2}}{\sqrt{c_1^{2} + 100}} \in \mathbb{R}
+        \qquad (t = \text{const.})
+\end{cases}
+\end{equation}
+
+Relocate the points in $M$ and define the resulting group as $G$, illustrated
+by the map $f : M \to G$.
+%
+% [FIX] Typo "illustarated" → "illustrated"
+%
+Define $f(p_k) = g_k = (x_k',\, y_k',\, z_k')$, where
+%
+% [FIX] Bare braces { } → \{ \}
+% [FIX] i \neq j, \implies  →  i \neq j \implies  (spurious comma removed)
+%
+\begin{equation}
+\begin{cases}
+    z_k' = z_k \\[6pt]
+    \forall\, i, j \in \{1, 2, \ldots, |M|\},\quad
+        i \neq j \implies f(p_i) \neq f(p_j) \\[6pt]
+    \forall\, (x, y, z) \in G,\quad
+        \mathcal{N}(x, y, z) \cap \bigl(G \setminus \{(x,y,z)\}\bigr) \neq \emptyset
+\end{cases}
+\tag{$*$}
+\end{equation}
+%
+where the neighbourhood is defined as
+\[
+    \mathcal{N}(x, y, z) = \{(x \pm 1,\, y,\, z),\; (x,\, y \pm 1,\, z)\}.
+\]
+
+Define
+\[
+    E(x, y, z_k) = \sqrt{x^{2} + y^{2}} - \epsilon\, z_k,
+    \qquad
+    \epsilon = \frac{1}{1 - t} = \text{const.}
+\]
+
+$M$ is relocated to form $G$ such that, for $k \in \{1, 2, \ldots, |M|\}$,
+%
+% [FIX] arg min → \arg\min
+%
+\[
+    g_k = \arg\min_{g \in \mathcal{A}_k} \bigl|E(x, y, z_k)\bigr|,
+\]
+%
+where $\mathcal{A}_k$ is the set of dynamically determined available positions
+for the $k$-th point, subject to constraint~$(*)$.
+
+Since $G \subseteq \Gamma$, let $T$ denote today's date, and define
+%
+% [FIX] G \cup{...}  →  G \cup \{...\}
+% [FIX] "B'" (undefined) → "G'" (consistent with the definition above)
+%
+\[
+    G' = G \cup \{(x, y, T)\}
+    \quad \text{s.t.} \quad
+    |G'| = |\Gamma|,
+    \qquad (x, y, T) \notin G.
+\]
+
+Solve for the total offset $R$ between $I$ and the points in $G'$:
+\[
+    R = \sum_{p \in G'} \bigl|p_z - z_I(p)\bigr|,
+    \qquad \text{where } (p_x, p_y, z_I(p)) \in I.
+\]
+
+The mean
+\[
+    \mu = \frac{R}{|\Gamma|}
+\]
+illustrates the overall progress relative to the ideal progress, and
+
+\[
+    \sigma
+    = \sqrt{\frac{1}{|\Gamma|}
+      \sum_{p \in G'} \Bigl(\bigl|p_z - z_I(p)\bigr| - \mu\Bigr)^{2}}
+\]
+illustrates the deviation of progress across the project.
+
+\end{document}
